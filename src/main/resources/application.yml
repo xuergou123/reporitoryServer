@@ -2,7 +2,7 @@ server:
   port: 8010
 spring:
   datasource:
-    url: jdbc:mysql://111.230.132.23:3306/goods
+    url: jdbc:mysql://111.230.132.23:3306/goods?useSSL=false
     username: root
     password: 147852369Abc
     driverClassName: com.mysql.jdbc.Driver

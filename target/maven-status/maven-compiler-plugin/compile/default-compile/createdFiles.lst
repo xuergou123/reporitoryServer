@@ -1,0 +1,6 @@
+com\itmuch\cloud\study\user\entity\User.class
+com\itmuch\cloud\study\user\controller\MovieController.class
+com\itmuch\cloud\study\config\CorsConfig.class
+com\itmuch\cloud\study\ConsumerMovieApplication.class
+com\itmuch\cloud\study\user\entity\ResponseCode.class
+com\itmuch\cloud\study\user\entity\Result.class

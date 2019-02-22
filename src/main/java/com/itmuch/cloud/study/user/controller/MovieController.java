@@ -3,6 +3,7 @@ package com.itmuch.cloud.study.user.controller;
 import com.itmuch.cloud.study.user.entity.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,13 +46,19 @@ public class MovieController {
   }
 
   @GetMapping("/getGoodsList")
-  public Result getGoodsList(@RequestParam("userid") String userid, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int size) {
+  public Result getGoodsList(@RequestParam("userid") String userid,
+                             @RequestParam("filter") String filter,
+                             @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int size) {
     Result r = new Result();
     Map<String,Object> result = new HashMap<>();
     String sql0 = "select count(*) from goods where userid=?";
     int count = jdbcTemplate.queryForObject(sql0,new Object[]{userid},Integer.class);
 
-    String sql = "select * from goods where userid=? limit ?,?";
+    String sql = "select * from goods where userid=? ";
+    if(!StringUtils.isEmpty(filter)){
+        sql+=" and goodsname like '%" +filter+ "%'";
+    }
+     sql +=" order by CREATETIME desc limit ?,?";
     List<Map<String,Object>> data = jdbcTemplate.queryForList(sql,userid,(page-1)*size,size);
 
 
@@ -102,4 +109,50 @@ public class MovieController {
     }
     return r;
   }
+
+    @GetMapping("/addGoodsList")
+    public Result addGoodsList(@RequestParam("uuid") String uuid,
+                               @RequestParam("goodsname") String goodsname,
+                               @RequestParam("goodscount") String goodscount,
+                               @RequestParam("goodsprice") String goodsprice,
+                               @RequestParam("memo") String memo) {
+        Result r = new Result();
+        Map<String,Object> result = new HashMap<>();
+        String sql = "insert into  goods(uuid,goodsname,goodscount,goodsprice,memo) values(?,?,?,?,?)";
+        int count = jdbcTemplate.update(sql,uuid,goodsname,goodscount,goodsprice,memo);
+        if(count>0){
+            r.setCode(200);
+            r.setMsg("添加成功！");
+            r.setData(null);
+        }else{
+            r.setCode(500);
+            r.setMsg("添加失败！");
+            r.setData(null);
+        }
+        return r;
+    }
+
+    @GetMapping("/editGoodsList")
+    public Result editGoodsList(@RequestParam("uuid") String uuid,
+                               @RequestParam("goodsname") String goodsname,
+                               @RequestParam("goodscount") String goodscount,
+                               @RequestParam("goodsprice") String goodsprice,
+                               @RequestParam("memo") String memo) {
+        Result r = new Result();
+        Map<String,Object> result = new HashMap<>();
+        String sql = "update  goods set goodsname=?,goodscount=?,goodsprice=?,memo=? where uuid = ?";
+        int count = jdbcTemplate.update(sql,goodsname,goodscount,goodsprice,memo,uuid);
+        if(count>0){
+            r.setCode(200);
+            r.setMsg("添加成功！");
+            r.setData(null);
+        }else{
+            r.setCode(500);
+            r.setMsg("添加失败！");
+            r.setData(null);
+        }
+        return r;
+    }
+
+
 }
